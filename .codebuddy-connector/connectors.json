@@ -1,0 +1,36 @@
+{
+  "name": "xique-connectors",
+  "description": "Official Xique connectors for WorkBuddy.",
+  "owner": {
+    "name": "Xique Team"
+  },
+  "connectors": [
+    {
+      "id": "xique-bid",
+      "name": "喜鹊标书",
+      "name_en": "Xique Bid",
+      "description": "Generate, review, revise, continue, and export Xique bid documents through a confirmation-gated workflow.",
+      "description_zh": "通过确认门禁流程生成、查看、修改、继续并导出喜鹊标书，支持完整配置卡片与大纲确认。",
+      "description_en": "Generate, review, revise, continue, and export Xique bid documents through a confirmation-gated workflow.",
+      "source": "xique-bid",
+      "type": "mcp",
+      "minWorkbuddyVersion": "5.3.11",
+      "examples_zh": [
+        "根据这份招标文件生成标书",
+        "查看并修改刚生成的大纲",
+        "确认大纲后生成正文并导出 Word"
+      ],
+      "examples_en": [
+        "Generate a bid document from this tender file.",
+        "Review and revise the generated outline.",
+        "Confirm the outline, generate the body, and export Word."
+      ],
+      "visible_in": [
+        "internal",
+        "iOA",
+        "cloudhosted",
+        "selfhosted"
+      ]
+    }
+  ]
+}

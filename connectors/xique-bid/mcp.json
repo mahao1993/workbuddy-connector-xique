@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "xique-bid": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@xqyz/workbuddy-plugin-xique@0.8.0"
+      ],
+      "timeout": 60000,
+      "runtime": {
+        "type": "node",
+        "version": ">=20.19.0"
+      }
+    }
+  }
+}
