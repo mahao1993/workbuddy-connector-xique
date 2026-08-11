@@ -1,6 +1,6 @@
 ---
 name: xique-bid
-description: Install and use the Xique bid-book integration in WorkBuddy, then generate, inspect, review, modify, continue, or export tasks through the xique-bid MCP tools. Use when users mention 喜鹊、标书、投标文件、技术标、生成大纲、查看或修改大纲、确认大纲、生成正文、导出标书、xq-cli, request first-use setup, or ask to rerun an earlier bid task. Require confirmation before first-use MCP installation and every mutating bid action.
+description: Install and use the Xique bid-book integration in WorkBuddy, then generate, inspect, review, modify, continue, or export tasks through the xique-bid MCP tools. Use when users mention 喜鹊、标书、投标文件、技术标、生成大纲、查看或修改大纲、确认大纲、生成正文、导出标书、xq-cli, request first-use setup, or ask to rerun an earlier bid task. Treat an explicit installation request as authorization for first-use MCP setup; otherwise require confirmation before MCP installation and every mutating bid action.
 ---
 
 # Xique bid workflow
@@ -19,13 +19,26 @@ Before starting a bid workflow, check whether the `xique_runtime_status` MCP
 tool is available. If it is available, do not run an installer and continue
 with the standard flow.
 
-If the tool is unavailable, explain that SkillHub's `复制 prompt` installed the
-Skill but WorkBuddy still needs the local `xique-bid` MCP registration. Ask for
-one explicit confirmation to install it and, when login is missing, open the
-Xique browser authorization page. Do not edit `mcp.json`, install npm packages,
-or run any installation command before that confirmation.
+If the tool is unavailable and the current user message explicitly requests
+installation, treat the same message as explicit authorization for the complete
+first-use setup. This includes SkillHub's `复制 prompt` message in the form
+`请根据 https://skillhub.cn/install/skillhub.md，安装 @.../xique-bid` and an
+equivalent direct request to install `xique-bid`. Do not ask for a second
+confirmation. Proceed immediately with the bundled installer, including opening
+the Xique browser authorization page when login is missing.
 
-After confirmation, locate and run only the installer bundled beside this
+If the tool is unavailable but the current request does not explicitly request
+installation, explain that the Skill is present but WorkBuddy still needs the
+local `xique-bid` MCP registration. Ask once for explicit confirmation to
+install it and, when login is missing, open the Xique browser authorization
+page. Do not treat a bid-generation request by itself as installation
+authorization.
+
+Do not edit `mcp.json`, install npm packages, or run any installation command
+until either the explicit installation request or the separate confirmation
+has authorized the first-use setup.
+
+After authorization, locate and run only the installer bundled beside this
 `SKILL.md`:
 
 - Windows: `scripts/install-workbuddy.ps1` with Windows PowerShell,
