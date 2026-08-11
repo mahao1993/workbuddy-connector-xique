@@ -1,6 +1,6 @@
 ---
 name: xique-bid
-description: Generate, inspect, review, modify, continue, or export Xique bid-book tasks through the xique-bid MCP tools. Use when users mention 标书、投标文件、技术标、生成大纲、查看或修改大纲、确认大纲、生成正文、导出标书、xq-cli, or ask to rerun an earlier bid task. Enforce explicit Chinese configuration collection, pause after outline generation, and require post-summary confirmation before every mutating generation, outline update, body continuation, or export action.
+description: Install and use the Xique bid-book integration in WorkBuddy, then generate, inspect, review, modify, continue, or export tasks through the xique-bid MCP tools. Use when users mention 喜鹊、标书、投标文件、技术标、生成大纲、查看或修改大纲、确认大纲、生成正文、导出标书、xq-cli, request first-use setup, or ask to rerun an earlier bid task. Require confirmation before first-use MCP installation and every mutating bid action.
 ---
 
 # Xique bid workflow
@@ -11,6 +11,43 @@ the MCP confirmation gate with direct shell commands.
 The MCP tools are the only authority for generation and status. Never create a
 helper script, start another MCP server process, invoke `xq-cli` directly, or
 use a log file/process list as proof that a task is still running or complete.
+The only shell exception is the bundled first-use installer described below.
+
+## First-use MCP installation
+
+Before starting a bid workflow, check whether the `xique_runtime_status` MCP
+tool is available. If it is available, do not run an installer and continue
+with the standard flow.
+
+If the tool is unavailable, explain that SkillHub's `复制 prompt` installed the
+Skill but WorkBuddy still needs the local `xique-bid` MCP registration. Ask for
+one explicit confirmation to install it and, when login is missing, open the
+Xique browser authorization page. Do not edit `mcp.json`, install npm packages,
+or run any installation command before that confirmation.
+
+After confirmation, locate and run only the installer bundled beside this
+`SKILL.md`:
+
+- Windows: `scripts/install-workbuddy.ps1` with Windows PowerShell,
+  `-NoProfile -ExecutionPolicy Bypass -File`.
+- macOS/Linux: `bash scripts/install-workbuddy.sh`.
+
+Resolve the script relative to the loaded Skill directory. If that path is not
+exposed, search only under `~/.workbuddy/skills` for an `xique-bid/scripts`
+match. Never download or reconstruct an installer. The installer is
+idempotent, backs up an existing `mcp.json`, preserves every other MCP entry,
+and configures `@xqyz/workbuddy-plugin-xique@0.9.0` using WorkBuddy's newest
+compatible bundled Node. That npm package already includes
+`@xqyz/xq-cli@0.2.1`; never ask the user to install xq-cli globally. If no
+local login token exists, the same installer runs browser authorization and
+waits for completion for up to 10 minutes. Never request a username, password,
+or token in chat.
+
+On success, show the installer's result, tell the user to fully restart
+WorkBuddy, and stop the current workflow. Do not claim the MCP is active in the
+same WorkBuddy process. After restart, call `xique_runtime_status`. If login is
+still missing, ask for confirmation and rerun the same idempotent installer so
+it can retry browser authorization; never expose credentials.
 
 When generation configuration is missing, you MUST use
 `xique_bid_configuration` once to collect all ordinary enumerated configuration
