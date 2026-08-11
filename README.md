@@ -14,9 +14,12 @@ The bundled Skill also contains idempotent first-use installers for SkillHub
 distribution. SkillHub's explicit `复制 prompt` installation request authorizes
 the complete setup, so the installer runs without a redundant second
 confirmation, backs up and merges `~/.workbuddy/mcp.json`, pins the same MCP npm
-version, opens browser authorization when login is missing, and asks for a full
-WorkBuddy restart. An ordinary non-installation request still requires one
-confirmation before first-use MCP setup.
+version, and opens browser authorization when login is missing. Writing the
+configuration is explicitly reported as pending activation: the user must click
+`信任` for `xique-bid` in WorkBuddy MCP service management, fully restart
+WorkBuddy, and pass `xique_runtime_status` before the Skill calls installation
+complete. An ordinary non-installation request still requires one confirmation
+before first-use MCP setup.
 
 For local development before publishing, register
 `workbuddy-plugin-xique/mcp/server.mjs` as a trusted custom MCP in WorkBuddy.

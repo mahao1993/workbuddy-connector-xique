@@ -56,11 +56,25 @@ local login token exists, the same installer runs browser authorization and
 waits for completion for up to 10 minutes. Never request a username, password,
 or token in chat.
 
-On success, show the installer's result, tell the user to fully restart
-WorkBuddy, and stop the current workflow. Do not claim the MCP is active in the
-same WorkBuddy process. After restart, call `xique_runtime_status`. If login is
-still missing, ask for confirmation and rerun the same idempotent installer so
-it can retry browser authorization; never expose credentials.
+A successful installer exit means only that the MCP configuration was written
+and any requested Xique login completed. It does not prove that WorkBuddy has
+trusted, started, or exposed the MCP tools. Never describe this state as
+`安装完成`, `注册成功`, `已启用`, or equivalent.
+
+After the installer exits successfully, tell the user that configuration is
+saved but activation is still pending. Instruct them to open
+`专家·技能·连接器 > 连接器 > MCP 服务管理`, find `xique-bid`, click `信任` when
+the first-connection prompt is visible, then fully exit and reopen WorkBuddy.
+Do not bypass or modify WorkBuddy's MCP trust records. Stop the current workflow
+after giving these instructions.
+
+After restart, call `xique_runtime_status`. Only report installation complete
+when that tool is available and confirms the Node runtime, bundled xq-cli, and
+login state. If the tool is still unavailable, tell the user to inspect the
+expanded `xique-bid` entry in MCP 服务管理 and report its exact error; do not run
+the installer repeatedly when `mcp.json` is already current. If login alone is
+missing, ask for confirmation and rerun the same idempotent installer so it can
+retry browser authorization; never expose credentials.
 
 When generation configuration is missing, you MUST use
 `xique_bid_configuration` once to collect all ordinary enumerated configuration

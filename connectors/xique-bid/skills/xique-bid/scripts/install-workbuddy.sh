@@ -111,12 +111,12 @@ changed="$($node_path -e 'const r=JSON.parse(process.argv[1]);process.stdout.wri
 config_file="$($node_path -e 'const r=JSON.parse(process.argv[1]);process.stdout.write(r.configFile)' "$result")"
 backup_file="$($node_path -e 'const r=JSON.parse(process.argv[1]);process.stdout.write(r.backupFile || "")' "$result")"
 if [ "$changed" = 'true' ]; then
-    echo "喜鹊标书 MCP 已写入：$config_file"
+    echo "喜鹊标书 MCP 配置已写入，但尚未激活：$config_file"
     if [ -n "$backup_file" ]; then
         echo "原配置已备份：$backup_file"
     fi
 else
-    echo "喜鹊标书 MCP 已是最新配置：$config_file"
+    echo "喜鹊标书 MCP 配置已是最新，但仍需验证激活状态：$config_file"
 fi
 echo "运行环境：$node_source ${best_version#v}"
 echo "MCP 版本：$package_spec（首次启动时由 npx 自动下载）"
@@ -132,4 +132,6 @@ if [ "$skip_login" != '1' ]; then
     fi
 fi
 
-echo '请完全退出并重新打开 WorkBuddy，然后输入“检查喜鹊标书环境”。'
+echo '仍需完成 WorkBuddy 信任：打开“专家·技能·连接器 > 连接器 > MCP 服务管理”，找到 xique-bid；如出现首次连接提示，请点击“信任”。'
+echo '然后完全退出并重新打开 WorkBuddy。'
+echo '只有重启后 xique_runtime_status 检查成功，才算安装完成。'

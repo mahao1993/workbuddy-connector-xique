@@ -95,12 +95,12 @@ if ($LASTEXITCODE -ne 0) {
 $result = (($rawResult -join "`n") | ConvertFrom-Json)
 
 if ($result.changed) {
-    Write-Output "Xique Bid MCP registered: $($result.configFile)"
+    Write-Output "Xique Bid MCP configuration saved (not active yet): $($result.configFile)"
     if (-not [string]::IsNullOrWhiteSpace([string]$result.backupFile)) {
         Write-Output "Existing configuration backup: $($result.backupFile)"
     }
 } else {
-    Write-Output "Xique Bid MCP is already up to date: $($result.configFile)"
+    Write-Output "Xique Bid MCP configuration is already current, but activation must still be verified: $($result.configFile)"
 }
 Write-Output "Runtime: $($selected.Source) $($selected.Version)"
 Write-Output "MCP package: $packageSpec (npx downloads it on first start)"
@@ -128,4 +128,6 @@ if (-not $SkipLogin) {
     }
 }
 
-Write-Output 'Fully exit and reopen WorkBuddy, then ask it to check the Xique Bid environment.'
+Write-Output 'WorkBuddy trust is still required: open 专家·技能·连接器 > 连接器 > MCP 服务管理, find xique-bid, and click 信任 if prompted.'
+Write-Output 'Then fully exit and reopen WorkBuddy.'
+Write-Output 'Installation is complete only after xique_runtime_status succeeds after restart.'
