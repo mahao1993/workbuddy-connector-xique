@@ -22,9 +22,10 @@ const existed = fs.existsSync(configFile);
 const original = existed ? fs.readFileSync(configFile, 'utf8') : '';
 let config = {};
 
-if (original.trim()) {
+const parseableOriginal = original.replace(/^\uFEFF/, '');
+if (parseableOriginal.trim()) {
     try {
-        config = JSON.parse(original);
+        config = JSON.parse(parseableOriginal);
     } catch (error) {
         fail('WorkBuddy MCP 配置不是有效 JSON，已停止且没有修改文件：' + error.message);
     }
@@ -41,11 +42,20 @@ if (config.mcpServers === undefined) {
 const previous = isObject(config.mcpServers['xique-bid'])
     ? config.mcpServers['xique-bid']
     : {};
+const serverEnv = isObject(previous.env) ? { ...previous.env } : {};
+const pathKey = Object.keys(serverEnv).find(key => key.toLowerCase() === 'path') || 'PATH';
+const inheritedPath = String(serverEnv[pathKey] || process.env.PATH || process.env.Path || '');
+const runtimeDirectory = path.dirname(command);
+serverEnv[pathKey] = [
+    runtimeDirectory,
+    ...inheritedPath.split(path.delimiter).filter(entry => entry && entry !== runtimeDirectory),
+].join(path.delimiter);
 config.mcpServers['xique-bid'] = {
     ...previous,
     type: 'stdio',
     command,
-    args: ['-y', packageSpec],
+    args: ['-y', `--package=${packageSpec}`, '--', 'xique-workbuddy-mcp'],
+    env: serverEnv,
     timeout: 60000,
     disabled: false,
 };
@@ -110,4 +120,3 @@ function fail(message) {
     process.stderr.write(String(message) + os.EOL);
     process.exit(1);
 }
-

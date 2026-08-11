@@ -3,7 +3,7 @@ set -euo pipefail
 export LC_ALL=C
 
 workbuddy_home="${WORKBUDDY_HOME:-${HOME}/.workbuddy}"
-package_version="${XIQUE_WORKBUDDY_MCP_VERSION:-0.9.0}"
+package_version="${XIQUE_WORKBUDDY_MCP_VERSION:-0.9.3}"
 skip_login='0'
 
 while [ "$#" -gt 0 ]; do

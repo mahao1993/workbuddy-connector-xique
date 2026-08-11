@@ -19,7 +19,7 @@ if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
     if (-not [string]::IsNullOrWhiteSpace($env:XIQUE_WORKBUDDY_MCP_VERSION)) {
         $PackageVersion = $env:XIQUE_WORKBUDDY_MCP_VERSION
     } else {
-        $PackageVersion = '0.9.0'
+        $PackageVersion = '0.9.3'
     }
 }
 if ($PackageVersion -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {

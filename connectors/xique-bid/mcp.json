@@ -5,7 +5,9 @@
       "command": "npx",
       "args": [
         "-y",
-        "@xqyz/workbuddy-plugin-xique@0.9.0"
+        "--package=@xqyz/workbuddy-plugin-xique@0.9.3",
+        "--",
+        "xique-workbuddy-mcp"
       ],
       "timeout": 60000,
       "runtime": {

@@ -7,7 +7,7 @@ It contains the Connector manifest, MCP launch configuration, and the same
 The MCP runtime is distributed as `@xqyz/workbuddy-plugin-xique`. Publish the
 matching version before releasing this Connector marketplace. WorkBuddy starts
 it through `npx`, so customers do not need a repository-specific absolute path.
-Version `0.9.0` includes `@xqyz/xq-cli@0.2.1`; customers do not install xq-cli
+Version `0.9.3` includes `@xqyz/xq-cli@0.2.1`; customers do not install xq-cli
 globally.
 
 The bundled Skill also contains idempotent first-use installers for SkillHub
