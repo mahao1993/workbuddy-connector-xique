@@ -5,7 +5,7 @@
       "command": "npx",
       "args": [
         "-y",
-        "--package=@xqyz/workbuddy-plugin-xique@0.9.3",
+        "--package=@xqyz/workbuddy-plugin-xique@0.9.4",
         "--",
         "xique-workbuddy-mcp"
       ],

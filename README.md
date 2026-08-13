@@ -7,19 +7,22 @@ It contains the Connector manifest, MCP launch configuration, and the same
 The MCP runtime is distributed as `@xqyz/workbuddy-plugin-xique`. Publish the
 matching version before releasing this Connector marketplace. WorkBuddy starts
 it through `npx`, so customers do not need a repository-specific absolute path.
-Version `0.9.3` includes `@xqyz/xq-cli@0.2.1`; customers do not install xq-cli
+Version `0.9.4` includes `@xqyz/xq-cli@0.2.1`; customers do not install xq-cli
 globally.
 
 The bundled Skill also contains idempotent first-use installers for SkillHub
 distribution. SkillHub's explicit `复制 prompt` installation request authorizes
 the complete setup, so the installer runs without a redundant second
 confirmation, backs up and merges `~/.workbuddy/mcp.json`, pins the same MCP npm
-version, and opens browser authorization when login is missing. Writing the
-configuration is explicitly reported as pending activation: the user must click
-`信任` for `xique-bid` in WorkBuddy MCP service management, fully restart
-WorkBuddy, and pass `xique_runtime_status` before the Skill calls installation
-complete. An ordinary non-installation request still requires one confirmation
-before first-use MCP setup.
+version, and opens browser authorization when no local API key or token is present.
+`XQ_API_KEY` is used first when it is set. New keys use the `xq_sk_` prefix.
+Users can configure it locally with `xq-cli login --api-key xq_sk_xxx` or an
+`XQ_API_KEY` environment variable; the key should never be pasted into chat.
+Writing the configuration is explicitly reported as pending activation: the
+user must click `信任` for `xique-bid` in WorkBuddy MCP service management, fully
+restart WorkBuddy, and pass `xique_runtime_status` before the Skill calls
+installation complete. An ordinary non-installation request still requires one
+confirmation before first-use MCP setup.
 
 For local development before publishing, register
 `workbuddy-plugin-xique/mcp/server.mjs` as a trusted custom MCP in WorkBuddy.

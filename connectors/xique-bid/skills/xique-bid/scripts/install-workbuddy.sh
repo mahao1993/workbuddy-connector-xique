@@ -3,7 +3,7 @@ set -euo pipefail
 export LC_ALL=C
 
 workbuddy_home="${WORKBUDDY_HOME:-${HOME}/.workbuddy}"
-package_version="${XIQUE_WORKBUDDY_MCP_VERSION:-0.9.3}"
+package_version="${XIQUE_WORKBUDDY_MCP_VERSION:-0.9.4}"
 skip_login='0'
 
 while [ "$#" -gt 0 ]; do
@@ -122,7 +122,7 @@ echo "运行环境：$node_source ${best_version#v}"
 echo "MCP 版本：$package_spec（首次启动时由 npx 自动下载）"
 
 if [ "$skip_login" != '1' ]; then
-    login_status="$($node_path -e 'const fs=require("fs"),os=require("os"),path=require("path");try{const c=JSON.parse(fs.readFileSync(path.join(os.homedir(),".xq-opencli","config.json"),"utf8"));process.stdout.write(c&&c.token?"logged-in":"missing")}catch{process.stdout.write("missing")}' )"
+    login_status="$($node_path -e 'const fs=require("fs"),os=require("os"),path=require("path");try{const c=JSON.parse(fs.readFileSync(path.join(os.homedir(),".xq-opencli","config.json"),"utf8"));const envApiKey=String(process.env.XQ_API_KEY||"").trim();process.stdout.write(envApiKey||c?.apiKey||c?.token?"logged-in":"missing")}catch{process.stdout.write(String(process.env.XQ_API_KEY||"").trim()?"logged-in":"missing")}' )"
     if [ "$login_status" = 'logged-in' ]; then
         echo '已检测到喜鹊登录状态，不重复打开授权页。'
     else

@@ -29,7 +29,7 @@ $workbuddyHome = if ($env:WORKBUDDY_HOME) { $env:WORKBUDDY_HOME } else { Join-Pa
 $runtime = Get-ChildItem -LiteralPath (Join-Path $workbuddyHome 'binaries\node\versions') -Directory -ErrorAction Stop | ForEach-Object { if ($_.Name -match '^\d+\.\d+\.\d+$') { $npx = Join-Path $_.FullName 'npx.cmd'; if (Test-Path -LiteralPath $npx -PathType Leaf) { [PSCustomObject]@{ Version = [Version]$_.Name; Npx = $npx } } } } | Sort-Object Version -Descending | Select-Object -First 1
 if ($null -eq $runtime) { throw '没有找到 WorkBuddy 内置 npx，请先升级 WorkBuddy。' }
 $env:PATH = (Split-Path -Parent $runtime.Npx) + [IO.Path]::PathSeparator + $env:PATH
-& $runtime.Npx -y '--package=@xqyz/workbuddy-plugin-xique@0.9.3' -- xique-workbuddy-install
+& $runtime.Npx -y '--package=@xqyz/workbuddy-plugin-xique@0.9.4' -- xique-workbuddy-install
 if ($LASTEXITCODE -ne 0) { throw '喜鹊标书 MCP 自动安装失败。' }
 ```
 
@@ -40,17 +40,35 @@ workbuddy_home="${WORKBUDDY_HOME:-$HOME/.workbuddy}"
 npx_path="$(find "$workbuddy_home/binaries/node/versions" -type f \( -path '*/bin/npx' -o -path '*/npx' \) | sort -V | tail -n 1)"
 test -n "$npx_path" || { echo '没有找到 WorkBuddy 内置 npx，请先升级 WorkBuddy。' >&2; exit 1; }
 export PATH="$(dirname "$npx_path"):$PATH"
-"$npx_path" -y --package='@xqyz/workbuddy-plugin-xique@0.9.3' -- xique-workbuddy-install
+"$npx_path" -y --package='@xqyz/workbuddy-plugin-xique@0.9.4' -- xique-workbuddy-install
 ```
+
+如果用户已经在 API Key 管理页创建了 Key，推荐先在本机终端完成 CLI 登录，再安装插件：
+
+```bash
+xq-cli login --api-key xq_sk_xxx
+```
+
+也可以先设置环境变量，WorkBuddy 插件会优先读取它：
+
+```powershell
+$env:XQ_API_KEY="xq_sk_xxx"
+```
+
+```bash
+export XQ_API_KEY="xq_sk_xxx"
+```
+
+API Key 不要粘贴到聊天消息中，只在本机终端或环境变量中配置。
 
 安装器会自动完成以下工作：
 
 - 使用 WorkBuddy 自带的 Node 20.19.0 或更高版本；
-- 下载固定版本 `@xqyz/workbuddy-plugin-xique@0.9.3`，其中已包含 `@xqyz/xq-cli@0.2.1`；
+- 下载固定版本 `@xqyz/workbuddy-plugin-xique@0.9.4`，其中已包含 `@xqyz/xq-cli@0.2.1`；
 - 备份并合并 `~/.workbuddy/mcp.json`，保留所有其他 MCP；
 - 注册名为 `xique-bid` 的 MCP；
 - 未登录时自动打开喜鹊浏览器授权页并等待最多 10 分钟；
-- 已登录时复用本地登录状态，绝不在聊天中索取账号、密码或 token。
+- 已登录时复用本地登录状态，绝不在聊天中索取账号、密码、API key 或 token。
 
 安装器成功退出只表示“自动配置已写入”，不能表示 WorkBuddy 已经信任并启动 MCP。
 随后明确告知用户：打开 `专家·技能·连接器 > 连接器 > MCP 服务管理`，找到 `xique-bid`，
@@ -64,8 +82,9 @@ export PATH="$(dirname "$npx_path"):$PATH"
 
 1. 缺少普通配置时，必须只调用一次 `xique_bid_configuration`，在一页中展示全部配置。
 2. 只在用户之后单独修改某一项时使用 `xique_select_option`。
-3. 使用 `xique_outline_start`、`xique_special_project_selection`、
-   `xique_outline_confirmation` 和 `xique_outline_update_confirmation` 展示对应阶段卡片。
+3. 使用 `xique_outline_start`、`xique_special_project_selection`、`xique_period_confirmation`、
+   `xique_outline_confirmation`、`xique_outline_update_confirmation` 和
+   `xique_directory_confirmation` 展示对应阶段卡片。规划模式必须按“智能解读→大纲→目录→正文”推进，快速模式按“大纲→正文”推进。
 4. 返回 `interactionMode=mcp-app` 时，WorkBuddy 会自动打开关联 MCP App。立即结束当前回复并等待用户点击；
    禁止调用 `read_me`、`show_widget`，禁止输出编号文本选项，禁止改用 `AskUserQuestion`。
 5. 每张 MCP App 卡片只能提交一次。第一次提交时立即锁定，即使超时或传输结果不确定也不得恢复点击，
@@ -100,7 +119,7 @@ export PATH="$(dirname "$npx_path"):$PATH"
 - 自动编号：`开启`、`关闭`；修改标记：`关闭`、`开启`。
 - 输出路径：`默认`、`指定路径`。只有选择指定路径后才允许询问绝对路径。
 
-WorkBuddy 标准流程固定使用 `计划模式=快速`，不得展示规划模式问题，也不得接受规划模式。
+WorkBuddy 标准流程必须展示 `计划模式=快速/规划`，并将用户选择原样提交；不得默认隐藏规划模式，也不得擅自替用户固定为快速。
 不得展示高级样式 JSON 输入框；模板5只能在喜鹊前端可视化设置。
 不得在普通配置页要求用户输入多标包 ID、标包类型或 EPC 类型。
 
@@ -138,17 +157,23 @@ WorkBuddy 标准流程固定使用 `计划模式=快速`，不得展示规划模
 8. 状态变为 `awaiting_input/special-config` 时，只调用一次
    `xique_special_project_selection(runId)`，展示后台解析出的真实标包和 EPC 选项；用户选择后调用一次
    `xique_apply_special_project_selection`，继续查询同一 `runId`，不得重新生成。
-9. 状态变为 `awaiting_confirmation` 时，完整展示 `outlineDetail.outLine` 的每一行，包含标题、主题、
+9. 状态变为 `awaiting_input/period-confirm` 时，只调用一次 `xique_period_confirmation`，展示并收集
+   `periodMode`、`contractPeriod`；日期已知时再收集 `contractStartDate` 和 `contractEndDate`。随后只调用一次
+   `xique_apply_period_confirmation`，继续同一 `runId`，不得重新上传或创建任务。
+10. 状态变为 `awaiting_confirmation` 时，完整展示 `outlineDetail.outLine` 的每一行，包含标题、主题、
    重要性和 id。每个数组元素显示为独立编号块，并核对显示数量等于数组长度；不得只显示章节数量或摘要。
-10. 调用一次 `xique_prepare_outline_continue(runId)`，把完整大纲、摘要、准确的 `runId` 和
+11. 调用一次 `xique_prepare_outline_continue(runId)`，把完整大纲、摘要、准确的 `runId` 和
     `confirmationId` 传给 `xique_outline_confirmation`，展示：
     `确认大纲并生成正文`、`修改大纲`、`暂不继续`。
-11. 用户点击 `确认大纲并生成正文` 后，只调用一次 `xique_continue_bid`，使用该点击卡携带的准确
-    `runId` 和 `confirmationId`。不得因为历史 ID 失效让用户确认第二次。
-12. 继续调用 `xique_generation_status(runId, waitSec=60)` 直到 `completed`、`failed` 或 `blocked`。
-13. 只有结果同时满足 `status=completed`、`fileExists=true` 和 `savedPath` 非空时才报告成功。
+12. 快速模式用户点击 `确认大纲并生成正文` 后，只调用一次 `xique_continue_bid`。规划模式用户点击
+    `确认大纲并生成目录` 后，也只调用一次 `xique_continue_bid`；该调用只启动目录生成。
+13. 规划模式目录完成后，完整展示目录树，允许通过 `xique_prepare_directory_update` / `xique_apply_directory_update`
+    修改并保存；保存后调用一次 `xique_prepare_directory_continue`，再用 `xique_directory_confirmation` 展示
+    `确认目录并生成正文`。用户确认后只调用一次 `xique_continue_content`。
+14. 继续调用 `xique_generation_status(runId, waitSec=60)` 直到 `completed`、`failed` 或 `blocked`。
+15. 只有结果同时满足 `status=completed`、`fileExists=true` 和 `savedPath` 非空时才报告成功。
     随即调用 `present_files(savedPath)`，让 Word 文件直接显示在 WorkBuddy，并提供绝对路径。
-14. 后台明确返回失败或阻塞时立即报告准确原因，不得等待用户主动追问。
+16. 后台明确返回失败或阻塞时立即报告准确原因，不得等待用户主动追问。
 
 特殊配置不与普通配置同时选择。只有招标文件解析后确认存在多标包或 EPC 场景时，才展示后台返回的真实选项。
 EPC 选项只允许 `全部编写`、`只写施工`、`只写设计`、`这不是EPC项目`，不得由用户手输或由模型虚构。

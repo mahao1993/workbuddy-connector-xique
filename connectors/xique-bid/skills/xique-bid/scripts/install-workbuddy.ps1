@@ -19,7 +19,7 @@ if ([string]::IsNullOrWhiteSpace($PackageVersion)) {
     if (-not [string]::IsNullOrWhiteSpace($env:XIQUE_WORKBUDDY_MCP_VERSION)) {
         $PackageVersion = $env:XIQUE_WORKBUDDY_MCP_VERSION
     } else {
-        $PackageVersion = '0.9.3'
+        $PackageVersion = '0.9.4'
     }
 }
 if ($PackageVersion -notmatch '^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$') {
@@ -111,10 +111,15 @@ if (-not $SkipLogin) {
     if (Test-Path -LiteralPath $loginConfigFile -PathType Leaf) {
         try {
             $loginConfig = Get-Content -Raw -Encoding UTF8 -LiteralPath $loginConfigFile | ConvertFrom-Json
-            $loggedIn = -not [string]::IsNullOrWhiteSpace([string]$loginConfig.token)
+            $loggedIn = -not [string]::IsNullOrWhiteSpace([string]$env:XQ_API_KEY) -or
+                -not [string]::IsNullOrWhiteSpace([string]$loginConfig.apiKey) -or
+                -not [string]::IsNullOrWhiteSpace([string]$loginConfig.token)
         } catch {
-            $loggedIn = $false
+            $loggedIn = -not [string]::IsNullOrWhiteSpace([string]$env:XQ_API_KEY)
         }
+    }
+    if (-not $loggedIn) {
+        $loggedIn = -not [string]::IsNullOrWhiteSpace([string]$env:XQ_API_KEY)
     }
     if ($loggedIn) {
         Write-Output 'Existing Xique login detected; browser authorization was not repeated.'

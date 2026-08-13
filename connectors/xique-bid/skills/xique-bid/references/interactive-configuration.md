@@ -61,9 +61,18 @@ settings on one page. Do not ask the user to type the whole configuration.
 - Allow free text only where this document explicitly requests a local path.
   Multi-bid identifiers/types and EPC values must come from the parsed backend
   response and must never be typed or invented by the user.
-- Always set `planMode=快速` (`0`). Do not display a 计划模式 question. If the
-  user explicitly asks for `规划`, explain that the WorkBuddy standard flow is
-  fixed to 快速 and wait for permission to continue with 快速.
+- 计划模式可在快速 / 规划间选择，并将用户选择原样提交。Do not silently force
+  quick mode or hide the 计划模式 question.
+
+### 2b. Plan mode
+
+Call `xique_select_option(field=planMode)`:
+
+- Header `计划模式`
+- Question `请选择计划模式。`
+- Options `快速`、`规划`
+
+Pass the selected value as-is. Do not silently force quick mode.
 
 ## Preferred one-page flow
 
